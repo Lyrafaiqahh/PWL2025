@@ -7,17 +7,28 @@ use Illuminate\Support\Facades\DB;
 
 class KategoriSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
+        DB::table('m_kategori')->truncate(); // Menghapus semua data lama
+
         DB::table('m_kategori')->insert([
-            ['kategori_kode' => 'ELEC', 'kategori_nama' => 'Elektronik'],
-            ['kategori_kode' => 'PAK', 'kategori_nama' => 'Pakaian'],
-            ['kategori_kode' => 'MAK', 'kategori_nama' => 'Makanan'],
-            ['kategori_kode' => 'MIN', 'kategori_nama' => 'Minuman'],
-            ['kategori_kode' => 'PRT', 'kategori_nama' => 'Peralatan Rumah Tangga'],
+            [
+                'kategori_id' => 1,
+                'kategori_kode' => 'CML',
+                'kategori_nama' => 'Cemilan',
+                'created_at' => '2024-03-09 10:30:00',
+                'updated_at' => null
+            ],
+            [
+                'kategori_id' => 2,
+                'kategori_kode' => 'MNR',
+                'kategori_nama' => 'Minuman Ringan',
+                'created_at' => '2024-03-09 13:01:39',
+                'updated_at' => null
+            ]
         ]);
     }
 }
-
-
-
