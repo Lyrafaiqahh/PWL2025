@@ -21,6 +21,6 @@ Route::get('/tambah-kategori', [KategoriController::class, 'tambahKategori']);
 Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori.index');
 Route::get('/kategori/create', [KategoriController::class, 'create']);
 Route::post('/kategori', [KategoriController::class, 'store']); // Pastikan ini ada
-Route::get('/kategori/edit/{id}', [KategoriController::class, 'edit']);
-Route::put('/kategori/update/{id}', [KategoriController::class, 'update']);
+Route::get('/kategori/{id}/edit', [KategoriController::class, 'edit'])->name('kategori.edit');
+Route::put('/kategori/{id}/update', [KategoriController::class, 'update'])->name( 'kategori.update');
 Route::delete('/kategori/delete/{id}', [KategoriController::class, 'destroy']);
