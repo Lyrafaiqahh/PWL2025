@@ -57,4 +57,14 @@ public function update(Request $request, $id)
     return redirect('/kategori')->with('success', 'Kategori berhasil diperbarui!');
 }
 
+public function destroy($id)
+{
+    $kategori = KategoriModel::findOrFail($id);
+    $kategori->delete();
+
+    return redirect('/kategori')->with('success', 'Kategori berhasil diperbarui!');
+}
+
+
+
 }

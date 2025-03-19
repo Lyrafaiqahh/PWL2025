@@ -23,7 +23,7 @@
                 <td>{{ $k->updated_at ?? '(NULL)' }}</td>
                 <td>
                 <a href="{{ route('kategori.edit', $k->kategori_id) }}" class="btn btn-warning btn-sm">Edit</a>
-                <form action="{{ url('/kategori/delete/'.$k->kategori_id) }}" method="POST" class="d-inline">
+                <form action="{{ route('kategori.destroy',$k->kategori_id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Delete</button>
