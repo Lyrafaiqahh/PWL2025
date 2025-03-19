@@ -14,7 +14,8 @@
             <h3 class="card-title">Buat kategori baru</h3>
         </div>
 
-        <form method="post" action="/kategori">
+        <form action="{{ url('/kategori') }}" method="POST">
+        @csrf  <!-- Wajib ada untuk keamanan -->
             <div class="card-body">
                 <div class="form-group">
                     <label for="kodeKategori">Kode Kategori</label>

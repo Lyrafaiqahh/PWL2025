@@ -1,38 +1,36 @@
-@extends('layout/app')
+<div class="container">
+    <h3>Daftar Kategori</h3>
+    <a href="{{ url('/kategori/create') }}" class="btn btn-success mb-3">+ Add Kategori</a>
 
-@section('content')
-    <div class="container">
-        <h3>Daftar Kategori</h3>
-        <table id="kategoriTable" class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Kategori ID</th>
-                    <th>Kategori Kode</th>
-                    <th>Kategori Nama</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($kategori as $k)
-                <tr>
-                    <td>{{ $k->kategori_id }}</td>
-                    <td><span style="color: {{ $k->kategori_kode == 'CML' ? 'green' : 'blue' }}; font-weight: bold;">{{ $k->kategori_kode }}</span></td>
-                    <td style="background-color: {{ $k->kategori_kode == 'MNR' ? '#D3E9D3' : 'white' }}">{{ $k->kategori_nama }}</td>
-                    <td style="color: {{ $k->kategori_kode == 'CML' ? 'red' : 'blue' }};">{{ $k->created_at }}</td>
-                    <td><span style="color: gray;">{{ $k->updated_at ?? '(NULL)' }}</span></td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    {{-- Tambahkan script DataTables --}}
-    @push('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#kategoriTable').DataTable();
-        });
-    </script>
-    @endpush
-@endsection
+    <table id="kategoriTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Kategori ID</th>
+                <th>Kategori Kode</th>
+                <th>Kategori Nama</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($kategori as $k)
+            <tr>
+                <td>{{ $k->kategori_id }}</td>
+                <td>{{ $k->kategori_kode }}</td>
+                <td>{{ $k->kategori_nama }}</td>
+                <td>{{ $k->created_at }}</td>
+                <td>{{ $k->updated_at ?? '(NULL)' }}</td>
+                <td>
+                    <a href="{{ url('/kategori/edit/'.$k->kategori_id) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="{{ url('/kategori/delete/'.$k->kategori_id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
