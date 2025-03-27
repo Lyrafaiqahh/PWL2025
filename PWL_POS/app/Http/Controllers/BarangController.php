@@ -9,9 +9,6 @@ use Yajra\DataTables\DataTables;
 
 class BarangController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $breadcrumb = (object) [
@@ -27,37 +24,32 @@ class BarangController extends Controller
 
         $kategori = KategoriModel::all();
 
-        return view('barang.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'kategori' => $kategori]);
+        return view('barang.index', compact('breadcrumb', 'page', 'activeMenu', 'kategori'));
     }
 
     public function list(Request $request)
     {
-        $products = BarangModel::select('barang_id', 'barang_kode', 'barang_nama', 'kategori_id', 'harga_beli', 'harga_jual')->with('kategori');
+        $products = BarangModel::select('barang_id', 'barang_kode', 'barang_nama', 'kategori_id', 'harga', 'stok')->with('kategori');
 
-        // Filter data barang berdasarkan kategori_id
         if ($request->kategori_id) {
             $products->where('kategori_id', $request->kategori_id);
         }
 
         return DataTables::of($products)
-            ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
-            ->addColumn('aksi', function ($barang) { // menambahkan kolom aksi
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($barang) {
                 $btn = '<a href="' . url('/barang/' . $barang->barang_id) . '" class="btn btn-info btn-sm">Detail</a> ';
                 $btn .= '<a href="' . url('/barang/' . $barang->barang_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a> ';
                 $btn .= '<form class="d-inline-block" method="POST" action="' . url('/barang/' . $barang->barang_id) . '">'
                     . csrf_field() . method_field('DELETE') .
                     '<button type="submit" class="btn btn-danger btn-sm"
-                    onclick="return confirm(\'Apakah Anda yakit menghapus data
-                    ini?\');">Hapus</button></form>';
+                    onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
                 return $btn;
             })
-            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
+            ->rawColumns(['aksi'])
             ->make(true);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $breadcrumb = (object) [
@@ -70,42 +62,29 @@ class BarangController extends Controller
         ];
 
         $kategori = KategoriModel::all();
-
         $activeMenu = 'barang';
 
-        return view('barang.create', ['breadcrumb' => $breadcrumb, 'page' => $page, 'kategori' => $kategori, 'activeMenu' => $activeMenu]);
+        return view('barang.create', compact('breadcrumb', 'page', 'kategori', 'activeMenu'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
             'barang_kode'   => 'required|string|min:3|unique:m_barang,barang_kode',
             'barang_nama'   => 'required|string|max:100',
-            'kategori_id'   => 'required|int',
-            'harga_beli'    => 'required|integer',
-            'harga_jual'    => 'required|integer'
+            'kategori_id'   => 'required|integer',
+            'harga'         => 'required|integer',
+            'stok'          => 'required|integer'
         ]);
 
-        BarangModel::create([
-            'barang_kode'   => $request->barang_kode,
-            'barang_nama'   => $request->barang_nama,
-            'kategori_id'   => $request->kategori_id,
-            'harga_beli'    => $request->harga_beli,
-            'harga_jual'    => $request->harga_jual
-        ]);
+        BarangModel::create($request->only(['barang_kode', 'barang_nama', 'kategori_id', 'harga', 'stok']));
 
         return redirect('/barang')->with('success', 'Data barang berhasil disimpan');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $barang = BarangModel::with('kategori')->find($id);
+        $barang = BarangModel::with('kategori')->findOrFail($id);
 
         $breadcrumb = (object) [
             'title' => 'Detail Barang',
@@ -118,20 +97,17 @@ class BarangController extends Controller
 
         $activeMenu = 'barang';
 
-        return view('barang.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'barang' => $barang]);
+        return view('barang.show', compact('breadcrumb', 'page', 'activeMenu', 'barang'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        $barang = BarangModel::find($id);
+        $barang = BarangModel::findOrFail($id);
         $kategori = KategoriModel::all();
 
         $breadcrumb = (object) [
             'title' => 'Edit Barang',
-            'list'  => ['Home', 'barang', 'Edit']
+            'list'  => ['Home', 'Barang', 'Edit']
         ];
 
         $page = (object) [
@@ -140,47 +116,34 @@ class BarangController extends Controller
 
         $activeMenu = 'barang';
 
-        return view('barang.edit', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'barang' => $barang, 'kategori' => $kategori]);
+        return view('barang.edit', compact('breadcrumb', 'page', 'activeMenu', 'barang', 'kategori'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $request->validate([
             'barang_kode'   => 'required|string|min:3|unique:m_barang,barang_kode,' . $id . ',barang_id',
             'barang_nama'   => 'required|string|max:100',
             'kategori_id'   => 'required|integer',
-            'harga_beli'    => 'required|integer',
-            'harga_jual'    => 'required|integer'
+            'harga'         => 'required|integer',
+            'stok'          => 'required|integer'
         ]);
 
-        BarangModel::find($id)->update([
-            'barang_kode'   => $request->barang_kode,
-            'barang_nama'   => $request->barang_nama,
-            'kategori_id'   => $request->kategori_id,
-            'harga_beli'    => $request->harga_beli,
-            'harga_jual'    => $request->harga_jual
-        ]);
+        BarangModel::findOrFail($id)->update($request->only(['barang_kode', 'barang_nama', 'kategori_id', 'harga', 'stok']));
 
         return redirect('/barang')->with('success', 'Data barang berhasil diubah');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $check = BarangModel::find($id);
+        $barang = BarangModel::find($id);
 
-        if (!$check) {
+        if (!$barang) {
             return redirect('/barang')->with('error', 'Data barang tidak ditemukan');
         }
 
         try {
-            BarangModel::destroy($id);
-
+            $barang->delete();
             return redirect('/barang')->with('success', 'Data barang berhasil dihapus');
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect('/barang')->with('error', 'Data barang gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');

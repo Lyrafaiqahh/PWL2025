@@ -28,16 +28,24 @@
                         <td>{{ $barang->barang_nama }}</td>
                     </tr>
                     <tr>
-                        <th>Kode Kategori</th>
+                        <th>Kategori</th>
                         <td>{{ $barang->kategori->kategori_nama }}</td>
                     </tr>
                     <tr>
-                        <th>Harga Beli</th>
-                        <td>{{ $barang->harga_beli }}</td>
+                        <th>Harga</th>
+                        <td>Rp {{ number_format($barang->harga, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
-                        <th>Harga Jual</th>
-                        <td>{{ $barang->harga_jual }}</td>
+                        <th>Stok</th>
+                        <td>{{ $barang->stok }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ditambahkan</th>
+                        <td>{{ date('d-m-Y H:i', strtotime($barang->created_at)) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Diubah</th>
+                        <td>{{ date('d-m-Y H:i', strtotime($barang->updated_at)) }}</td>
                     </tr>
                 </table>
             @endempty

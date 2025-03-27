@@ -18,7 +18,7 @@
             @else
                 <form method="POST" action="{{ url('/barang/' . $barang->barang_id) }}" class="form-horizontal">
                     @csrf
-                    {!! method_field('PUT') !!} <!-- tambahkan baris ini untuk proses edit yang butuh method PUT -->
+                    {!! method_field('PUT') !!}
 
                     <div class="form-group row">
                         <label for="barang_kode" class="col-1 control-label col-form-label">Kode</label>
@@ -43,10 +43,10 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="kategori_id" class="col-1 control-label col-form-label">Level</label>
+                        <label for="kategori_id" class="col-1 control-label col-form-label">Kategori</label>
                         <div class="col-11">
                             <select class="form-control" id="kategori_id" name="kategori_id" required>
-                                <option value="">- Pilih Level -</option>
+                                <option value="">- Pilih Kategori -</option>
                                 @foreach($kategori as $item)
                                 <option value="{{ $item->kategori_id }}"
                                     @if($item->kategori_id == $barang->kategori_id)
@@ -63,22 +63,22 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="harga_beli" class="col-1 control-label col-form-label">Harga Beli</label>
+                        <label for="harga" class="col-1 control-label col-form-label">Harga</label>
                         <div class="col-11">
-                            <input type="text" class="form-control" id="harga_beli" name="harga_beli" value="{{ old('harga_beli', $barang->harga_beli) }}" required>
+                            <input type="text" class="form-control" id="harga" name="harga" value="{{ old('harga', $barang->harga) }}" required>
 
-                            @error('harga_beli')
+                            @error('harga')
                                 <small class="form-text text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="harga_jual" class="col-1 control-label col-form-label">Harga Jual</label>
+                        <label for="stok" class="col-1 control-label col-form-label">Stok</label>
                         <div class="col-11">
-                            <input type="text" class="form-control" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $barang->harga_jual) }}" required>
+                            <input type="number" class="form-control" id="stok" name="stok" value="{{ old('stok', $barang->stok) }}" required>
 
-                            @error('harga_jual')
+                            @error('stok')
                                 <small class="form-text text-danger">{{ $message }}</small>
                             @enderror
                         </div>

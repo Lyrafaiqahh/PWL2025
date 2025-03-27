@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('m_barang', function (Blueprint $table) {
             $table->id('barang_id');
-            $table->unsignedBigInteger('kategori_id')->index(); // Foreign key ke m_kategori
-            $table->string('barang_kode', 20)->unique();
+            $table->unsignedBigInteger('kategori_id');
+            $table->string('barang_kode', 10)->unique();
             $table->string('barang_nama', 100);
-            $table->decimal('harga', 10, 2);
-            $table->integer('stok');
+            $table->integer('harga'); // Mengganti harga_beli & harga_jual dengan harga saja
+            $table->integer('stok'); // Menambahkan kolom stok
             $table->timestamps();
 
-            // Foreign key ke tabel m_kategori
             $table->foreign('kategori_id')->references('kategori_id')->on('m_kategori');
         });
     }
