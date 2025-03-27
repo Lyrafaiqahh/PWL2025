@@ -5,7 +5,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <a class="btn btn-sm btn-primary mt-1" href="{{ url('supplier/create') }}">Tambah</a>
+                <a class="btn btn-sm btn-primary mt-1" href="{{ url('stok/create') }}">Tambah</a>
             </div>
         </div>
 
@@ -18,13 +18,14 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_supplier">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_stok">
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Kode Supplier</th>
-                    <th>Nama Supplier</th>
-                    <th>Alamat Supplier</th>
+                    <th>Barang ID</th>
+                    <th>User ID</th>
+                    <th>Tanggal Stok</th>
+                    <th>Jumlah Stok</th>
                     <th>Aksi</th>
                 </tr>
                 </thead>
@@ -39,43 +40,49 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            var dataKategori = $('#table_supplier').DataTable({
+            var dataStok = $('#table_stok').DataTable({
                 serverSide: true, // serverSide: true, jika ingin menggunakan server side processing
                 ajax: {
-                    "url": "{{ url('supplier/list') }}",
+                    "url": "{{ url('stok/list') }}",
                     "dataType": "json",
                     "type": "POST"
                 },
                 columns: [
                     {
-                        data: "DT_RowIndex", // nomor urut dari laravel datatable addIndexColumn()
+                        data: "DT_RowIndex",
                         className: "text-center",
                         orderable: false,
                         searchable: false
                     },
                     {
-                        data: "supplier_kode",
+                        data: "barang_id",
                         className: "",
-                        orderable: true, // orderable: true, jika ingin kolom ini bisa diurutkan
-                        searchable: true // searchable: true, jika ingin kolom ini bisa dicari
+                        orderable: true,
+                        searchable: true
                     },
                     {
-                        data: "supplier_nama",
+                        data: "user_id",
                         className: "",
-                        orderable: true, // orderable: true, jika ingin kolom ini bisa diurutkan
-                        searchable: true // searchable: true, jika ingin kolom ini bisa dicari
+                        orderable: true,
+                        searchable: true
                     },
                     {
-                        data: "supplier_alamat",
+                        data: "stok_tanggal",
                         className: "",
-                        orderable: true, // orderable: true, jika ingin kolom ini bisa diurutkan
-                        searchable: true // searchable: true, jika ingin kolom ini bisa dicari
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "stok_jumlah",
+                        className: "",
+                        orderable: true,
+                        searchable: true
                     },
                     {
                         data: "aksi",
                         className: "",
-                        orderable: false, // orderable: true, jika ingin kolom ini bisa diurutkan
-                        searchable: false // searchable: true, jika ingin kolom ini bisa dicari
+                        orderable: false,
+                        searchable: false
                     }
                 ]
             });

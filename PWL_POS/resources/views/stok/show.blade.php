@@ -8,7 +8,7 @@
         </div>
 
         <div class="card-body">
-            @empty($supplier)
+            @empty($stok)
                 <div class="alert alert-danger alert-dismissible">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!</h5>
                     Data yang Anda cari tidak ditemukan.
@@ -17,24 +17,28 @@
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tr>
                         <th>ID</th>
-                        <td>{{ $supplier->supplier_id }}</td>
+                        <td>{{ $stok->stok_id }}</td>
                     </tr>
                     <tr>
-                        <th>Kode supplier</th>
-                        <td>{{ $supplier->supplier_kode }}</td>
+                        <th>Barang ID</th>
+                        <td>{{ $stok->barang_id }}</td>
                     </tr>
                     <tr>
-                        <th>Nama supplier</th>
-                        <td>{{ $supplier->supplier_nama }}</td>
+                        <th>User ID</th>
+                        <td>{{ $stok->user_id }}</td>
                     </tr>
                     <tr>
-                        <th>Alamat supplier</th>
-                        <td>{{ $supplier->supplier_alamat }}</td>
+                        <th>Tanggal Stok</th>
+                        <td>{{ $stok->stok_tanggal }}</td>
+                    </tr>
+                    <tr>
+                        <th>Jumlah Stok</th>
+                        <td>{{ $stok->stok_jumlah }}</td>
                     </tr>
                 </table>
             @endempty
 
-            <a href="{{ url('supplier') }}" class="btn btn-sm btn-default mt-2">Kembali</a>
+            <a href="{{ url('stok') }}" class="btn btn-sm btn-default mt-2">Kembali</a>
         </div>
     </div>
 @endsection
