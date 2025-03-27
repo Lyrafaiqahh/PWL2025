@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\StokModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 
 class StokController extends Controller
 {
@@ -16,26 +17,30 @@ class StokController extends Controller
         ];
 
         $page = (object) [
-            'title' => 'Daftar stok barang',
+            'title' => 'Daftar stok barang yang tersedia dalam sistem',
         ];
 
         $activeMenu = 'stok';
 
         $stok = StokModel::all();
 
-        return view('stok.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'page' => $page, 'stok' => $stok]);
+        return view('stok.index', compact('breadcrumb', 'activeMenu', 'page', 'stok'));
     }
 
     public function list(Request $request)
     {
-        $stok = StokModel::select('stok_id', 'barang_id', 'user_id', 'stok_tanggal', 'stok_jumlah');
+        $stok = StokModel::select('stok_id', 'barang_id', 'user_id', 'stok_tanggal', 'stok_jumlah', 'created_at', 'updated_at');
+
+        if ($request->stok_id) {
+            $stok->where('stok_id', $request->stok_id);
+        }
 
         return DataTables::of($stok)
             ->addIndexColumn()
             ->addColumn('aksi', function ($stok) {
-                $btn = '<a href="' . url('/stok/' . $stok->stok_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn .= '<a href="' . url('/stok/' . $stok->stok_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a> ';
-                $btn .= '<form class="d-inline-block" method="POST" action="' . url('/stok/' . $stok->stok_id) . '">' . csrf_field() . method_field('DELETE') . '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
+                $btn = '<button onclick="modalAction(\'' . url('/stok/' . $stok->stok_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/stok/' . $stok->stok_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/stok/' . $stok->stok_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -50,12 +55,12 @@ class StokController extends Controller
         ];
 
         $page = (object) [
-            'title' => 'Tambah stok barang',
+            'title' => 'Tambah stok baru',
         ];
 
         $activeMenu = 'stok';
 
-        return view('stok.create', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'page' => $page]);
+        return view('stok.create', compact('breadcrumb', 'activeMenu', 'page'));
     }
 
     public function store(Request $request)
@@ -64,7 +69,7 @@ class StokController extends Controller
             'barang_id' => 'required|integer',
             'user_id' => 'required|integer',
             'stok_tanggal' => 'required|date',
-            'stok_jumlah' => 'required|integer',
+            'stok_jumlah' => 'required|integer|min:1',
         ]);
 
         StokModel::create($request->all());
@@ -72,38 +77,31 @@ class StokController extends Controller
         return redirect('/stok')->with('success', 'Data stok berhasil ditambahkan');
     }
 
-    public function show($id)
+    public function show(string $id)
     {
         $stok = StokModel::find($id);
-        
-        if (!$stok) {
-            return redirect('/stok')->with('error', 'Data stok tidak ditemukan');
-        }
 
         $breadcrumb = (object) [
             'title' => 'Detail Stok',
             'list' => ['Home', 'Stok', 'Detail'],
         ];
+
         $page = (object) [
             'title' => 'Detail Stok',
         ];
 
         $activeMenu = 'stok';
 
-        return view('stok.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'stok' => $stok]);
+        return view('stok.show', compact('breadcrumb', 'page', 'activeMenu', 'stok'));
     }
 
-    public function edit($id)
+    public function edit(string $id)
     {
         $stok = StokModel::find($id);
-        
-        if (!$stok) {
-            return redirect('/stok')->with('error', 'Data stok tidak ditemukan');
-        }
 
         $breadcrumb = (object) [
             'title' => 'Edit Stok',
-            'list' => ['Home', 'Stok', 'Edit']
+            'list' => ['Home', 'Stok', 'Edit'],
         ];
 
         $page = (object) [
@@ -112,16 +110,16 @@ class StokController extends Controller
 
         $activeMenu = 'stok';
 
-        return view('stok.edit', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'page' => $page, 'stok' => $stok]);
+        return view('stok.edit', compact('breadcrumb', 'activeMenu', 'page', 'stok'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         $request->validate([
             'barang_id' => 'required|integer',
             'user_id' => 'required|integer',
             'stok_tanggal' => 'required|date',
-            'stok_jumlah' => 'required|integer',
+            'stok_jumlah' => 'required|integer|min:1',
         ]);
 
         StokModel::find($id)->update($request->all());
@@ -129,19 +127,19 @@ class StokController extends Controller
         return redirect('/stok')->with('success', 'Data stok berhasil diperbarui');
     }
 
-    public function destroy($id)
+    public function destroy(string $id)
     {
         $stok = StokModel::find($id);
-        
+
         if (!$stok) {
             return redirect('/stok')->with('error', 'Data stok tidak ditemukan');
         }
 
         try {
-            StokModel::destroy($id);
+            $stok->delete();
             return redirect('/stok')->with('success', 'Data stok berhasil dihapus');
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/stok')->with('error', 'Data stok gagal dihapus karena masih terdapat tabel lain yang terkait');
+            return redirect('/stok')->with('error', 'Data stok gagal dihapus karena masih terdapat relasi dengan tabel lain');
         }
     }
 }
