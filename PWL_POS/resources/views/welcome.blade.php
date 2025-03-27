@@ -1,4 +1,4 @@
-@extends('layouts\template')
+@extends('layouts.template')
 
 @section('content')
 
@@ -11,4 +11,5 @@
         Selamat datang semua, ini adalah halaman utama dari aplikasi ini.
     </div>
 </div>
+
 @endsection
