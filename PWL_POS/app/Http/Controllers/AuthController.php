@@ -8,7 +8,7 @@ public function login()
 {
 if(Auth::check()){ // jika sudah login, maka redirect ke halaman home return redirect('/');
 }
-return view('auth/login');
+return view('auth.login');
 }
 
 public function postlogin(Request $request)
@@ -33,7 +33,6 @@ public function logout(Request $request)
 Auth::logout();
 
 $request->session()->invalidate();
-$request->session()->regenerateToken(); 
-return redirect('login');
+$request->session()->regenerateToken(); return redirect('login');
 }
 }
