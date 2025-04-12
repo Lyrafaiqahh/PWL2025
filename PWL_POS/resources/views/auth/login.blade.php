@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login Pengguna</title>
     <link rel="stylesheet"
@@ -67,6 +68,12 @@
     <script src="{{ asset('adminlte/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
     <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
         $(document).ready(function () {
             $("#form-login").validate({
                 rules: {
@@ -81,52 +88,54 @@
                         maxlength: 20
                     }
                 },
-                submitHandler: function(form) {
-    event.preventDefault(); // Mencegah submit default
-    $('#btn-login').prop('disabled', true).text('Processing...');
+                submitHandler: function(form, event) {
+                    event.preventDefault();
+                    $('#btn-login').prop('disabled', true).text('Processing...');
 
-    $.ajax({
-        url: form.action,
-        type: form.method,
-        data: $(form).serialize(),
-        success: function(response) {
-            console.log(response); // Debugging: lihat apa yang dikembalikan server
+                    $.ajax({
+                        url: form.action,
+                        type: form.method,
+                        data: $(form).serialize(),
+                        success: function(response) {
+                            console.log(response);
+                            if (response.status) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message,
+                                }).then(function() {
+                                    window.location.href = response.redirect;
+                                });
+                            } else {
+                                $('#btn-login').prop('disabled', false).text('Sign In');
+                                $('.error-text').text('');
 
-            if (response.status) { // Jika login sukses
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: response.message,
-                }).then(function() {
-                    window.location.href = response.redirect; // Arahkan ke halaman berikutnya
-                });
-            } else { // Jika gagal login
-                $('#btn-login').prop('disabled', false).text('Sign In');
-                $('.error-text').text('');
-                $.each(response.msgField, function(prefix, val) {
-                    $('#error-' + prefix).text(val[0]);
-                });
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan',
-                    text: response.message
-                });
-            }
-        },
-        error: function(xhr) { // Jika terjadi error di server
-            console.log(xhr.responseText);
-            Swal.fire({
-                icon: 'error',
-                title: 'Login Gagal!',
-                text: 'Terjadi kesalahan pada server.'
-            });
-            $('#btn-login').prop('disabled', false).text('Sign In');
-        }
-    });
+                                // Cek jika msgField ada
+                                if (response.msgField) {
+                                    $.each(response.msgField, function(prefix, val) {
+                                        $('#error-' + prefix).text(val[0]);
+                                    });
+                                }
 
-    return false;
-}
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Login Gagal!',
+                                    text: response.message
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            console.log(xhr.responseText);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Login Gagal!',
+                                text: 'Terjadi kesalahan pada server.'
+                            });
+                            $('#btn-login').prop('disabled', false).text('Sign In');
+                        }
+                    });
 
+                    return false;
                 },
                 errorElement: 'span',
                 errorPlacement: function (error, element) {

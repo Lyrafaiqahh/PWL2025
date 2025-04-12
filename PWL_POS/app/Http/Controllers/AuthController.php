@@ -1,32 +1,41 @@
 <?php
-namespace App\Http\Controllers; use Illuminate\Http\Request;
+namespace App\Http\Controllers; 
+
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-public function login()
-{
-if(Auth::check()){ // jika sudah login, maka redirect ke halaman home return redirect('/');
-}
-return view('auth\login');
-}
+    public function login()
+    {
+        if (Auth::check()) return redirect('/');
+        return view('auth.login'); // pastikan view ada di resources/views/auth/login.blade.php
+    }
 
-public function postlogin(Request $request)
-{
-if($request->ajax() || $request->wantsJson()){
-$credentials = $request->only('username', 'password');
+    public function postlogin(Request $request)
+    {
+        if ($request->ajax()) {
+            $credentials = $request->only('username', 'password');
 
-if (Auth::attempt($credentials)) { return response()->json([
-'status' => true,
-'message' => 'Login Berhasil', 'redirect' => url('/')
-]);
-}
-return response()->json([ 'status' => false, 'message' => 'Login Gagal'
-]);
-}
+            if (Auth::attempt($credentials)) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Login Berhasil',
+                    'redirect' => url('/')
+                ]);
+            }
 
-return redirect('login');
-}
+            return response()->json([
+                'status' => false,
+                'message' => 'Login Gagal. Username atau password salah.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Permintaan tidak valid.'
+        ]);
+    }
 
 public function logout(Request $request)
 {
