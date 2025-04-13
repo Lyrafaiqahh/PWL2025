@@ -62,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy']);
     });
 
-    Route::middleware(['authorize:ADM'])->group(function(){
+        Route::middleware(['authorize:ADM'])->prefix('level')->group(function () {
         Route::get('/', [LevelController::class, 'index']);
         Route::post("/list", [LevelController::class, 'list']);
         Route::get('/create', [LevelController::class, 'create']);
@@ -85,7 +85,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
 // artinya semua route di dalam group ini harus punya role ADM (Administrator) dan MNG (Manager)
-    Route::middleware(['authorize:ADM,MNG'])->group(function(){
+Route::middleware(['authorize:ADM,MNG'])->prefix('barang')->group(function () {
         Route::get('/', [BarangController::class, 'index']);
         Route::post('/list', [BarangController::class, 'list']);
         Route::get('/create', [BarangController::class, 'create']);
@@ -96,7 +96,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [BarangController::class, 'destroy']);
     });
 
-    Route::group(['prefix' => 'stok'], function () {
+    Route::middleware(['authorize:ADM,MNG,STF'])->prefix('stok')->group(function () {
         Route::get('/', [StokController::class, 'index']);
         Route::post('/list', [StokController::class, 'list']);
         Route::get('/create', [StokController::class, 'create']);
