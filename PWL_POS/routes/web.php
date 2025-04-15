@@ -45,6 +45,9 @@ Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+ Route::post('/register', [AuthController::class, 'postRegister']);
+ 
  
 
 // Middleware 'auth' untuk semua route yang memerlukan autentikasi
@@ -106,4 +109,5 @@ Route::middleware(['authorize:ADM,MNG'])->prefix('barang')->group(function () {
         Route::put('/{id}', [StokController::class, 'update']);
         Route::delete('/{id}', [StokController::class, 'destroy']);
     });
+    
 });
