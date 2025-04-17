@@ -63,6 +63,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/edit', [UserController::class, 'edit']);
         Route::put('/{id}', [UserController::class, 'update']);
         Route::delete('/{id}', [UserController::class, 'destroy']);
+        Route::get('/{id}/delete_ajax', [UserController::class, 'confirm_ajax']); // Untuk tampilkan form confirm delete user Ajax
+        Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']);
+        // Import User with Excel
+        Route::get('import', [UserController::class, 'import']); // ajax form upload excel
+        Route::post('import_ajax', [UserController::class, 'import_ajax']); // ajax import excel
     });
 
         Route::middleware(['authorize:ADM'])->prefix('level')->group(function () {
