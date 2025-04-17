@@ -9,6 +9,7 @@
                 <a href="{{ url('/Kategori/create') }}" class="btn btn-primary">Tambah Data</a>
                 <button onclick="modalAction('{{ url('/kategori/create_ajax') }}')" class="btn btn-success">Tambah Data (Ajax)</button>
                 <a href="{{ url('/kategori/export_excel') }}" class="btn btn-primary"><i class="fa fa-file- excel"></i> Export Kategori</a>
+                <a href="{{ url('/kategori/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file- pdf"></i> Export Kategori PDF</a>
             </div>
         </div>
         
