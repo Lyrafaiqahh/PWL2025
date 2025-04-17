@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
  use PhpOffice\PhpSpreadsheet\IOFactory;
  use PhpOffice\PhpSpreadsheet\Spreadsheet;
+ use Barryvdh\DomPDF\Facade\Pdf;
  
  
 
@@ -276,6 +277,22 @@ public function export_excel()
     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
     $writer->save('php://output');
     exit;
+}
+
+public function export_pdf()
+{
+    // Ambil data stok
+    $stoks = StokModel::select('stok_id', 'barang_id', 'user_id', 'stok_tanggal', 'stok_jumlah', 'created_at', 'updated_at')
+        ->orderBy('stok_id')
+        ->get();
+
+    // Gunakan view 'stok.export_pdf' untuk generate PDF
+    $pdf = Pdf::loadView('stok.export_pdf', ['stok' => $stoks]);
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOption("isRemoteEnabled", true);
+    $pdf->render();
+
+    return $pdf->stream('Data Stok ' . date('Y-m-d_H-i-s') . '.pdf');
 }
 
 }

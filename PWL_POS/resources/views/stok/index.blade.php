@@ -6,8 +6,9 @@
             <h3 class="card-title">Daftar Stok</h3>
             <div class="card-tools">
                 <button onclick="modalAction('{{ url('/stok/import') }}')" class="btn btn-info">Import Stok</button>
-                <a href="{{ url('/supplier/export_excel') }}" class="btn btn-primary"><i class="fa fa-file- excel"></i> Export Supplier</a>
+                <a href="{{ url('/stok/export_excel') }}" class="btn btn-primary"><i class="fa fa-file- excel"></i> Export Stok EXCEL</a>
                 <button onclick="modalAction('{{ url('/stok/create_ajax') }}')" class="btn btn-success">Tambah Data (Ajax)</button>
+                <a href="{{ url('/stok/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file- pdf"></i> Export Stok PDF</a>
             </div>
         </div>
 
