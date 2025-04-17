@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('barang_kode', 10)->unique();
             $table->string('barang_nama', 100);
             $table->integer('harga'); // Mengganti harga_beli & harga_jual dengan harga saja
+            $table->decimal('harga_beli', 12, 2)->after('barang_nama')->nullable();
+            $table->decimal('harga_jual', 12, 2)->after('harga_beli')->nullable();
             $table->integer('stok'); // Menambahkan kolom stok
             $table->timestamps();
 

@@ -88,16 +88,26 @@ Route::middleware(['auth'])->group(function () {
     });
 
 // artinya semua route di dalam group ini harus punya role ADM (Administrator) dan MNG (Manager)
-Route::middleware(['authorize:ADM,MNG'])->prefix('barang')->group(function () {
+Route::middleware(['authorize:ADM,MNG'])->group(function(){
+    Route::group(['prefix' => 'barang'], function () {
         Route::get('/', [BarangController::class, 'index']);
         Route::post('/list', [BarangController::class, 'list']);
         Route::get('/create', [BarangController::class, 'create']);
         Route::post('/', [BarangController::class, 'store']);
-        Route::get('/{id}', [BarangController::class, 'show']);
+        Route::get('/{id}/detail', [BarangController::class, 'show']);
         Route::get('/{id}/edit', [BarangController::class, 'edit']);
         Route::put('/{id}', [BarangController::class, 'update']);
-        Route::delete('/{id}', [BarangController::class, 'destroy']);
-    });
+         // Delete menggunakan AJAX
+         Route::get('/{id}/delete_ajax', [BarangController::class, 'confirm_ajax']); // Form konfirmasi hapus barang AJAX
+         Route::delete('/{id}/delete_ajax', [BarangController::class, 'delete_ajax']); // Hapus barang AJAX
+         Route::delete('/{id}', [BarangController::class, 'destroy']); // Hapus barang
+        // Import Barang with Excel
+        Route::get('/import', [BarangController::class, 'import']); // ajax form upload excel
+        Route::post('/import_ajax', [BarangController::class, 'import_ajax']); // ajax import excel
+
+
+});
+});
 
     Route::middleware(['authorize:ADM,MNG,STF'])->prefix('stok')->group(function () {
         Route::get('/', [StokController::class, 'index']);
