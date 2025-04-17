@@ -6,6 +6,9 @@ use App\Models\StokModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+ use PhpOffice\PhpSpreadsheet\IOFactory;
+ 
 
 class StokController extends Controller
 {
@@ -142,4 +145,69 @@ class StokController extends Controller
             return redirect('/stok')->with('error', 'Data stok gagal dihapus karena masih terdapat relasi dengan tabel lain');
         }
     }
+
+    public function import()
+    {
+        return view('stok.import'); // Ganti view sesuai dengan konteks (stok)
+    }
+    
+    public function import_ajax(Request $request)
+{
+    $rules = [
+        'file_stok' => ['required', 'mimes:xlsx,xls', 'max:1024']
+    ];
+
+    $validator = Validator::make($request->all(), $rules);
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Validasi Gagal',
+            'msgField' => $validator->errors()
+        ]);
+    }
+
+    try {
+        $file = $request->file('file_stok');
+        $reader = IOFactory::createReader('Xlsx');
+        $reader->setReadDataOnly(true);
+        $spreadsheet = $reader->load($file->getRealPath());
+        $sheet = $spreadsheet->getActiveSheet();
+        $data = $sheet->toArray(null, false, true, true);
+
+        $insert = [];
+        if (count($data) > 1) {
+            foreach ($data as $row => $value) {
+                if ($row > 1) { // Lewati baris header
+                    $insert[] = [
+                        'barang_id'    => $value['A'],
+                        'user_id'      => $value['B'],
+                        'stok_tanggal' => $value['C'],
+                        'stok_jumlah'  => $value['D'],
+                        'created_at'   => now(),
+                        'updated_at'   => now(),
+                    ];
+                }
+            }
+
+            if (count($insert) > 0) {
+                StokModel::insertOrIgnore($insert);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport'
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Tidak ada data yang diimport'
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Stok Import Error: ' . $e->getMessage());
+        return response()->json([
+            'status' => false,
+            'message' => 'Gagal mengunggah file: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }

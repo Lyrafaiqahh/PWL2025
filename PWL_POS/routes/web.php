@@ -28,13 +28,13 @@
 
 
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\AuthController;
+use App\Models\StokModel;
 use Illuminate\Support\Facades\Route;
 
 // Pastikan {id} hanya bisa berupa angka
@@ -131,6 +131,9 @@ Route::middleware(['authorize:ADM,MNG'])->group(function(){
         Route::get('/{id}/edit', [StokController::class, 'edit']);
         Route::put('/{id}', [StokController::class, 'update']);
         Route::delete('/{id}', [StokController::class, 'destroy']);
+           // Import Supplier with Excel
+           Route::get('import', [StokController::class, 'import']); // ajax form upload excel
+           Route::post('import_ajax', [StokController::class, 'import_ajax']); // ajax import excel
     });
     
 });

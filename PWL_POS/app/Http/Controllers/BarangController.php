@@ -186,67 +186,53 @@ class BarangController extends Controller
    // Import data barang via AJAX dari file Excel
    public function import_ajax(Request $request)
    {
-       if ($request->ajax() || $request->wantsJson()) {
-           // Validasi file yang diunggah
-           $rules = [
-               'file_barang' => ['required', 'mimes:xlsx', 'max:1024'] // max 1MB
-           ];
-
-           $validator = Validator::make($request->all(), $rules);
-           if ($validator->fails()) {
-               return response()->json([
-                   'status' => false,
-                   'message' => 'Validasi Gagal',
-                   'msgField' => $validator->errors()
-               ]);
-           }
-
-           // Proses file Excel
-           try {
-               $file = $request->file('file_barang');
-               $reader = IOFactory::createReader('Xlsx');
-               $reader->setReadDataOnly(true);
-               $spreadsheet = $reader->load($file->getRealPath());
-               $sheet = $spreadsheet->getActiveSheet();
-               $data = $sheet->toArray(null, false, true, true);
-
-               $insert = [];
-
-               if (count($data) > 1) {
-                   foreach ($data as $baris => $value) {
-                       if ($baris > 1) { // Skip baris pertama (header)
-                           $insert[] = [
-                               'kategori_id' => $value['A'],
-                               'barang_kode' => $value['B'],
-                               'barang_nama' => $value['C'],
-                               'harga_beli' => $value['D'],
-                               'harga_jual' => $value['E'],
-                               'created_at' => now(),
-                           ];
-                       }
-                   }
-
-                   if (count($insert) > 0) {
-                       BarangModel::insertOrIgnore($insert);
-                       return response()->json([
-                           'status' => true,
-                           'message' => 'Data berhasil diimport'
-                       ]);
-                   }
+       $rules = [
+           'file_barang' => ['required', 'mimes:xlsx', 'max:1024']
+       ];
+   
+       $validator = Validator::make($request->all(), $rules);
+       if ($validator->fails()) {
+           return response()->json([
+               'status' => false,
+               'message' => 'Validasi Gagal',
+               'msgField' => $validator->errors()
+           ]);
+       }
+   
+       $file = $request->file('file_barang');
+       $reader = IOFactory::createReader('Xlsx');
+       $reader->setReadDataOnly(true);
+       $spreadsheet = $reader->load($file->getRealPath());
+       $sheet = $spreadsheet->getActiveSheet();
+       $data = $sheet->toArray(null, false, true, true);
+   
+       $insert = [];
+       if (count($data) > 1) {
+           foreach ($data as $baris => $value) {
+               if ($baris > 1) {
+                   $insert[] = [
+                       'kategori_id' => $value['A'],
+                       'barang_kode' => $value['B'],
+                       'barang_nama' => $value['C'],
+                       'harga_beli' => $value['D'],
+                       'harga_jual' => $value['E'],
+                       'created_at' => now(),
+                   ];
                }
-
+           }
+   
+           if (count($insert) > 0) {
+               BarangModel::insertOrIgnore($insert);
                return response()->json([
-                   'status' => false,
-                   'message' => 'Tidak ada data yang diimport'
-               ]);
-           } catch (\Exception $e) {
-               return response()->json([
-                   'status' => false,
-                   'message' => 'Terjadi kesalahan saat memproses file: ' . $e->getMessage()
+                   'status' => true,
+                   'message' => 'Data berhasil diimport'
                ]);
            }
        }
-
-       return redirect('/');
+   
+       return response()->json([
+           'status' => false,
+           'message' => 'Tidak ada data yang diimport'
+       ]);
    }
 }
