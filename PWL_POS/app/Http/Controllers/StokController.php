@@ -8,6 +8,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
  use PhpOffice\PhpSpreadsheet\IOFactory;
+ use PhpOffice\PhpSpreadsheet\Spreadsheet;
  
  
 
@@ -211,4 +212,70 @@ class StokController extends Controller
         ], 500);
     }
 }
+
+public function export_excel()
+{
+    // Ambil data stok yang akan diekspor
+    $stoks = StokModel::select('stok_id', 'barang_id', 'user_id', 'stok_tanggal', 'stok_jumlah', 'created_at', 'updated_at')
+        ->orderBy('stok_id')
+        ->get();
+
+    // Load library PhpSpreadsheet
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Set header kolom
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'Stok ID');
+    $sheet->setCellValue('C1', 'Barang ID');
+    $sheet->setCellValue('D1', 'User ID');
+    $sheet->setCellValue('E1', 'Tanggal Stok');
+    $sheet->setCellValue('F1', 'Jumlah Stok');
+    $sheet->setCellValue('G1', 'Created At');
+    $sheet->setCellValue('H1', 'Updated At');
+
+    // Format header bold
+    $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+    // Isi data stok
+    $no = 1;
+    $baris = 2;
+    foreach ($stoks as $stok) {
+        $sheet->setCellValue('A' . $baris, $no);
+        $sheet->setCellValue('B' . $baris, $stok->stok_id);
+        $sheet->setCellValue('C' . $baris, $stok->barang_id);
+        $sheet->setCellValue('D' . $baris, $stok->user_id);
+        $sheet->setCellValue('E' . $baris, $stok->stok_tanggal);
+        $sheet->setCellValue('F' . $baris, $stok->stok_jumlah);
+        $sheet->setCellValue('G' . $baris, $stok->created_at);
+        $sheet->setCellValue('H' . $baris, $stok->updated_at);
+        $baris++;
+        $no++;
+    }
+
+    // Set auto size untuk kolom
+    foreach (range('A', 'H') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Set title sheet
+    $sheet->setTitle('Data Stok');
+
+    // Generate filename
+    $filename = 'Data_Stok_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    // Set header untuk download file
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+    header('Cache-Control: cache, must-revalidate');
+    header('Pragma: public');
+
+    $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+    $writer->save('php://output');
+    exit;
+}
+
 }
