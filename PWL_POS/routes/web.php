@@ -95,6 +95,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/edit', [KategoriController::class, 'edit']);
         Route::put('/{id}', [KategoriController::class, 'update']);
         Route::delete('/{id}', [KategoriController::class, 'destroy']);
+          // Import Kategori with Excel
+          Route::get('import', [KategoriController::class, 'import']); // ajax form upload excel
+          Route::post('import_ajax', [KategoriController::class, 'import_ajax']); // ajax import excel
     });
 
 // artinya semua route di dalam group ini harus punya role ADM (Administrator) dan MNG (Manager)
