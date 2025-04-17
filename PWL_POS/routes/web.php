@@ -55,6 +55,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [WelcomeController::class, 'index']);
 
     Route::group(['prefix' => 'user'], function () {
+        Route::get('/profile', [UserController::class, 'profile']);
+        Route::post('/profile/update-photo', [UserController::class, 'updatePhoto'])->name('user.updatePhoto');
         Route::get('/', [UserController::class, 'index']);
         Route::post('/list', [UserController::class, 'list']);
         Route::get('/create', [UserController::class, 'create']);
