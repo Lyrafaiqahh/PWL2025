@@ -1,6 +1,8 @@
-<html>
+<!DOCTYPE html>
+<html lang="id">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: "Times New Roman", Times, serif;
@@ -33,19 +35,19 @@
             text-align: center;
         }
         .p-1 {
-            padding: 5px 1px 5px 1px;
+            padding: 5px 1px;
         }
-        .font-10 {
-            font-size: 10pt;
+        .font-10 { 
+            font-size: 10pt; 
         }
-        .font-11 {
-            font-size: 11pt;
+        .font-11 { 
+            font-size: 11pt; 
         }
-        .font-12 {
-            font-size: 12pt;
+        .font-12 { 
+            font-size: 12pt; 
         }
-        .font-13 {
-            font-size: 13pt;
+        .font-13 { 
+            font-size: 13pt; 
         }
         .border-bottom-header {
             border-bottom: 1px solid;
@@ -59,7 +61,7 @@
     <table class="border-bottom-header">
         <tr>
             <td width="15%" class="text-center">
-                <img src="{{ public_path('polinema-bw.png') }}" class="image">
+                <img src="{{ asset('Polinema-logo.png') }}" alt="Logo Polinema" style="width: 120px; height: auto;">
             </td>
             <td width="85%">
                 <span class="text-center d-block font-11 font-bold mb-1">
@@ -80,32 +82,28 @@
             </td>
         </tr>
     </table>
-
-    <h3 class="text-center">LAPORAN DATA STOK</h3>
-
-    <table class="border-all font-11">
+    
+    <h3 class="text-center">LAPORAN DATA BARANG</h3>
+    
+    <table class="border-all">
         <thead>
             <tr>
                 <th class="text-center">No</th>
-                <th>ID Barang</th>
                 <th>ID User</th>
-                <th>Tanggal Stok</th>
-                <th>Jumlah Stok</th>
-                <th>Created At</th>
-                <th>Updated At</th>
+                <th>Nama Pembeli</th>
+                <th class="text-right">Kode Penjualan</th>
+                <th class="text-right">Tanggal Penjualan</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($stok as $s)
-            <tr>
-                <td class="text-center">{{ $loop->iteration }}</td>
-                <td>{{ $s->barang_id }}</td>
-                <td>{{ $s->user_id }}</td>
-                <td>{{ $s->stok_tanggal }}</td>
-                <td class="text-center">{{ $s->stok_jumlah }}</td>
-                <td>{{ $s->created_at }}</td>
-                <td>{{ $s->updated_at }}</td>
-            </tr>
+            @foreach($penjualan as $p)
+                <tr>
+                    <td class="text-center">{{ $loop->iteration }}</td>
+                    <td>{{ $p->user_id }}</td>
+                    <td>{{ $p->nama_pembeli }}</td>
+                    <td class="text-right">{{ number_format($p->penjualan_kode, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($p->penjualan_tanggal, 0, ',', '.') }}</td>
+                </tr>
             @endforeach
         </tbody>
     </table>
