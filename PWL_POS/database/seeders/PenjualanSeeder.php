@@ -9,13 +9,28 @@ class PenjualanSeeder extends Seeder
 {
     public function run(): void
     {
-        $data = [];
+        $pembeli = [
+            'Andi Saputra',
+            'Rina Lestari',
+            'Budi Santoso',
+            'Siti Nurhaliza',
+            'Dedi Kurniawan',
+            'Fitriani Putri',
+            'Agus Salim',
+            'Linda Mariana',
+            'Yoga Pratama',
+            'Nia Ramadhani',
+        ];
 
-        for ($i = 1; $i <= 10; $i++) {
+        $data = [];
+        foreach ($pembeli as $index => $nama) {
+            $no = $index + 1;
             $data[] = [
-                'user_id' => rand(1, 3), // Random user dari m_user (1 = Admin, 2 = Manager, 3 = Staff)
-                'tanggal' => now()->subDays(rand(0, 30)), // Tanggal random dalam 30 hari terakhir
-                'total_harga' => rand(50000, 500000), // Harga antara 50rb - 500rb
+                'penjualan_id' => $no,
+                'user_id' => 3,
+                'pembeli' => $nama,
+                'penjualan_kode' => 'PJ-' . str_pad($no, 4, '0', STR_PAD_LEFT),
+                'penjualan_tanggal' => now()->subDays(rand(0, 10)),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -24,10 +39,3 @@ class PenjualanSeeder extends Seeder
         DB::table('t_penjualan')->insert($data);
     }
 }
-
-
-
-
-
-
-
