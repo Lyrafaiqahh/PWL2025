@@ -5,9 +5,10 @@
     <div class="card-header">
         <h3 class="card-title">Daftar Pengguna</h3>
         <div class="card-tools">
+        <a class="btn btn-sm btn-primary mt-1" href="{{ url('user/create') }}">Tambah</a>
+        <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-sm btn- success mt-1">Tambah Ajax</button>
             <button onclick="modalAction('{{ url('/user/import') }}')" class="btn btn-info">Import Pengguna</button>
             <a href="{{ url('/user/export_excel') }}" class="btn btn-primary"><i class="fa fa-file- excel"></i> Export User</a>
-            <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-success">Tambah Pengguna (Ajax)</button>
             <a href="{{ url('/user/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file- pdf"></i> Export User</a>
         </div>
     </div>
@@ -58,7 +59,7 @@
 </div>
 
 <!-- Modal for Import Form -->
-<div id="myModal" class="modal fade animate shake" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="75%"></div>
+<div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data- backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection 
 
 @push('js')
@@ -69,17 +70,17 @@
         });
     }
 
-    var tableUser;
+    var dataUser;
     $(document).ready(function() {
-        tableUser = $('#table-user').DataTable({
-            processing: true,
+        dataUser = $('#table-user').DataTable({
+        
             serverSide: true, 
             ajax: {
                 "url": "{{ url('user/list') }}",
                 "dataType": "json",
                 "type": "POST",
                 "data": function (d) {
-                    d.filter_level = $('.filter_level').val();
+                    d.level_id = $('#level_id').val();
                 }
             },
             columns: [

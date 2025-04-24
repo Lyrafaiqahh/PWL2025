@@ -71,21 +71,21 @@
                         searchable: true
                     },
                     {
-                        data: "supplier_kode",
+                        data: "kode_supplier",
                         className: "",
                         width: "10%",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "supplier_nama",
+                        data: "nama_supplier",
                         className: "",
                         width: "25%",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "supplier_alamat",
+                        data: "alamat",
                         className: "",
                         width: "20%",
                         orderable: true,

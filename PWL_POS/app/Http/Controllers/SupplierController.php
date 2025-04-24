@@ -28,7 +28,7 @@ class SupplierController extends Controller
     }
     public function list(Request $request)
     {
-        $suppliers = SupplierModel::select('supplier_id', 'supplier_kode', 'supplier_nama', 'supplier_alamat');
+        $suppliers = SupplierModel::select('supplier_id', 'kode_supplier', 'nama_supplier', 'alamat');
 
         return DataTables::of($suppliers)
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
@@ -55,27 +55,32 @@ class SupplierController extends Controller
 
         $activeMenu = 'supplier'; // set menu yang sedang aktif
 
-        return view('supplier.create', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
+        return view('supplier.create', [
+            'breadcrumb' => $breadcrumb, 
+            'page' => $page, 
+            'activeMenu' => $activeMenu
+        ]);
     }
+    
     public function store(Request $request)
     {
         $request->validate([
-            'supplier_kode' => 'required|string|min:3|unique:m_supplier,supplier_id',
-            'supplier_nama'     => 'required|string|max:100',
-            'supplier_alamat'   => 'required|string',
+            'kode_supplier' => 'required|string|min:3|unique:m_supplier,supplier_id',
+            'nama_supplier'     => 'required|string|max:100',
+            'alamat'   => 'required|string',
         ]);
 
         SupplierModel::create([
-            'supplier_kode' => $request->supplier_kode,
-            'supplier_nama'     => $request->supplier_nama,
-            'supplier_alamat'   => $request->supplier_alamat,
+            'kode_supplier' => $request->kode_supplier,
+            'nama_supplier'     => $request->nama_supplier,
+            'alamat'   => $request->alamat,
         ]);
 
         return redirect('/supplier')->with('success', 'Data supplier berhasil disimpan');
     }
     public function show(string $id)
     {
-        $supplier = SupplierModel::find($id);
+        $supplier = SupplierModel::with('kategori')->find($id);
 
         $breadcrumb = (object) [
             'title' => 'Detail supplier',
@@ -95,6 +100,7 @@ class SupplierController extends Controller
             'activeMenu' => $activeMenu
         ]);
     }
+
     public function edit(string $id)
     {
         $supplier = SupplierModel::find($id);
@@ -110,24 +116,33 @@ class SupplierController extends Controller
 
         $activeMenu = 'supplier'; // set menu yang sedang aktif
 
-        return view('supplier.edit', ['breadcrumb' => $breadcrumb, 'page' => $page, 'supplier' => $supplier, 'activeMenu' => $activeMenu]);
+        return view('supplier.edit', [
+            'breadcrumb' => $breadcrumb, 
+            'page' => $page, 
+            'supplier' => $supplier, 
+            'activeMenu' => $activeMenu
+        
+        ]);
     }
+
+
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'supplier_kode' => 'required|string|min:3|unique:m_supplier,supplier_kode,' . $id . ',supplier_id',
-            'supplier_nama'     => 'required|string|max:100',
-            'supplier_alamat'   => 'required|string',
+            'kode_supplier' => 'required|string|min:3|unique:m_supplier,kode_supplier,' . $id . ',supplier_id',
+            'nama_supplier'     => 'required|string|max:100',
+            'alamat'   => 'required|string',
         ]);
 
         SupplierModel::find($id)->update([
-            'supplier_kode' => $request->supplier_kode,
-            'supplier_nama'     => $request->supplier_nama,
-            'supplier_alamat'   => $request->supplier_alamat,
+            'kode_supplier' => $request->kode_supplier,
+            'nama_supplier'     => $request->nama_supplier,
+            'alamat'   => $request->alamat,
         ]);
 
         return redirect('/supplier')->with('success', 'Data supplier berhasil diubah');
     }
+
     public function destroy(string $id)
     {
         $check = SupplierModel::find($id);
@@ -144,17 +159,21 @@ class SupplierController extends Controller
             return redirect('/supplier')->with('error', 'Data supplier gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
         }
     }
+
+
     public function create_ajax()
     {
         return view('supplier.create_ajax');
     }
+
+
     public function store_ajax(Request $request)
     {
         if($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'supplier_kode' => 'required|string|min:3|unique:m_supplier,supplier_id',
-                'supplier_nama'     => 'required|string|max:100',
-                'supplier_alamat'   => 'required|string',
+                'kode_supplier' => 'required|string|min:3|unique:m_supplier,supplier_id',
+                'nama_supplier'     => 'required|string|max:100',
+                'alamat'   => 'required|string',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -185,9 +204,9 @@ class SupplierController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'supplier_kode' => 'required|string|min:3|unique:m_supplier,supplier_kode,' . $id . ',supplier_id',
-                'supplier_nama'     => 'required|string|max:100',
-                'supplier_alamat'   => 'required|string',
+                'kode_supplier' => 'required|string|min:3|unique:m_supplier,kode_supplier,' . $id . ',supplier_id',
+                'nama_supplier'     => 'required|string|max:100',
+                'alamat'   => 'required|string',
             ];
     
             $validator = Validator::make($request->all(), $rules);
@@ -272,9 +291,9 @@ class SupplierController extends Controller
                 foreach ($data as $baris => $value) {
                     if ($baris > 1) { // baris ke 1 adalah header
                         $insert[] = [
-                            'supplier_kode' => $value['A'],
-                            'supplier_nama' => $value['B'],
-                            'supplier_alamat' => $value['C'],
+                            'kode_supplier' => $value['A'],
+                            'nama_supplier' => $value['B'],
+                            'alamat' => $value['C'],
                             'created_at' => now(),
                         ];
                     }
@@ -301,7 +320,7 @@ class SupplierController extends Controller
     public function export_excel()
     {
         // ambil data supplier yang akan di export
-        $supplier = SupplierModel::select('supplier_kode', 'supplier_nama', 'supplier_alamat')
+        $supplier = SupplierModel::select('kode_supplier', 'nama_supplier', 'alamat')
                                 ->orderBy('supplier_id')
                                 ->get();
 
@@ -320,9 +339,9 @@ class SupplierController extends Controller
         $baris = 2;
         foreach ($supplier as $value) {
             $sheet->setCellValue('A' . $baris, $no);
-            $sheet->setCellValue('B' . $baris, $value->supplier_kode);
-            $sheet->setCellValue('C' . $baris, $value->supplier_nama);
-            $sheet->setCellValue('D' . $baris, $value->supplier_alamat);
+            $sheet->setCellValue('B' . $baris, $value->kode_supplier);
+            $sheet->setCellValue('C' . $baris, $value->nama_supplier);
+            $sheet->setCellValue('D' . $baris, $value->alamat);
             $baris++;
             $no++;
         }
@@ -352,9 +371,9 @@ class SupplierController extends Controller
 
     public function export_pdf()
     {
-        $supplier = SupplierModel::select('supplier_kode', 'supplier_nama', 'supplier_alamat')
+        $supplier = SupplierModel::select('kode_supplier', 'nama_supplier', 'alamat')
                                 ->orderBy('supplier_id')
-                                ->orderBy('supplier_kode')
+                                ->orderBy('kode_supplier')
                                 ->get();
     
         // use Barryvdh\DomPDF\Facade\Pdf;

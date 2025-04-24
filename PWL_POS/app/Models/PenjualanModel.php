@@ -19,7 +19,7 @@ class PenjualanModel extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'nama_pembeli', 'penjualan_kode', 'penjualan_tanggal'];
+    protected $fillable = ['user_id', 'pembeli', 'penjualan_kode', 'penjualan_tanggal'];
 
     public function user(): BelongsTo
     {
